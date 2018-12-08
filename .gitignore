@@ -1,5 +1,5 @@
 .DS*
-/data/
+/data/*
 !/data/formula_image_1to1.lst 
 !/data/formulas.final.lst
 *.ipynb
