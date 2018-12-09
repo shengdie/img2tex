@@ -1,0 +1,9 @@
+{
+	"export_name": "vocab.json",
+
+    "unk": "<UNK>",
+    "pad": "<NULL>",
+    "end": "<END>",
+    "path_vocab": "data/vocab.txt",
+    "min_count_tok": 10
+}

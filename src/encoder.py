@@ -1,4 +1,5 @@
 import tensorflow as tf
+from .general.positional import add_timing_signal_nd
 
 class Encoder(object):
     """Encoder
