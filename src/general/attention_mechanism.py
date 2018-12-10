@@ -81,6 +81,7 @@ class AttentionMechanism(object):
                     dtype=tf.float32)
             att_flat = tf.reshape(att, shape=[-1, self._dim_e])
             e = tf.matmul(att_flat, att_beta)
+            print(e)
             e = tf.reshape(e, shape=[-1, self._n_regions])
 
             # compute weights
