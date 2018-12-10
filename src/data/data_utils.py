@@ -28,6 +28,21 @@ def resize_img(img, tbpad=(1,1), aspect=16):
     else:
         return None
 
+def sort_filt_data(data_set, tbpad, max_aspect, max_formula_len):
+    """ sort by width, and filter by max_aspect and max_formula_len
+    """
+    imgs, formulas = data_set
+    max_img_len = (tbpad[0]+tbpad[1]+imgs[0].shape[0]) * max_aspect
+    img_len = [img.shape[1] for img in imgs]
+    argso = np.argsort(img_len)
+    tokenlized_fm = []
+    images_f = []
+    for i in argso:
+        if len(formulas[i]) <= max_formula_len and imgs[i].shape[1] <= max_img_len:
+            tokenlized_fm.append(formulas[i])
+            images_f.append(imgs[i])
+    return images_f, tokenlized_fm
+
 def pad_batch_images(imgs, tbpad):
     max_w = max([img.shape[1] for img in imgs])
     n_imgs = []
@@ -37,7 +52,10 @@ def pad_batch_images(imgs, tbpad):
         padr = int(max_w -padl - ow)
         n_img = cv2.copyMakeBorder(img, tbpad[0],tbpad[1], padl, padr, cv2.BORDER_CONSTANT, value=255)
         n_imgs.append(n_img)
-        
+    # reshape from (N, H, W) to (N,H,W,1)
+    n_imgs = np.expand_dims(n_imgs, -1)
+    return n_imgs
+
 
 def pad_batch_formulas(formulas, id_pad, id_end, max_len=None):
     """Pad formulas to the max length with id_pad and adds and id_end token
@@ -55,19 +73,22 @@ def pad_batch_formulas(formulas, id_pad, id_end, max_len=None):
     if max_len is None:
         max_len = max(map(lambda x: len(x), formulas))
 
-    batch_formulas = id_pad * np.ones([len(formulas), max_len+1],
-            dtype=np.int32)
+    batch_formulas = id_pad * np.ones([len(formulas), max_len+1], dtype=np.int32)
     formula_length = np.zeros(len(formulas), dtype=np.int32)
+    #print(len(formulas), formulas)
     for idx, formula in enumerate(formulas):
-        batch_formulas[idx, :len(formula)] = np.asarray(formula,
-                dtype=np.int32)
+        #print(id_end)
+        #print(formula)
+        batch_formulas[idx, :len(formula)] = np.asarray(formula, dtype=np.int32)
+        #print(id_end)
         batch_formulas[idx, len(formula)]  = id_end
         formula_length[idx] = len(formula) + 1
 
     return batch_formulas, formula_length
         
 def generate_vocab(tokenlized_fms, cut=0, null='<NULL>', start='<START>', end='<END>',unk='<UNK>'):
-    id_to_token, counts = np.unique(tokenlized_fms, return_counts=True)
+    flat_fms = [t for f in tokenlized_fms for t in f]
+    id_to_token, counts = np.unique(flat_fms, return_counts=True)
     #return (id_to_token, counts)
     id_to_token = id_to_token[counts>cut]
     id_to_token = np.delete(id_to_token, np.argwhere(id_to_token==null))

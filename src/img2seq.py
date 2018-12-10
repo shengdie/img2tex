@@ -8,7 +8,8 @@ from .utils.general import Config, Progbar, minibatches
 #from .utils.image import pad_batch_images
 #from .utils.text import pad_batch_formulas
 from .evaluation.text import score_files, write_answers, truncate_end
-
+from .data.datagen import TrainBatchData
+#from .data.data_utils import pad_batch_formulas, pad_batch_images
 
 from .encoder import Encoder
 from .decoder import Decoder
@@ -90,7 +91,7 @@ class Img2SeqModel(BaseModel):
         tf.summary.scalar("lr", self.lr)
 
 
-    def _get_feed_dict(self, img, training, formula=None, lr=None, dropout=1):
+    def _get_feed_dict(self, img, training, formula=None, formula_length=None, lr=None, dropout=1):
         """Returns a dict"""
         #img = pad_batch_images(img)
 
@@ -105,7 +106,7 @@ class Img2SeqModel(BaseModel):
             #        self._vocab.id_pad, self._vocab.id_end)
             # print img.shape, formula.shape
             fd[self.formula] = formula
-            fd[self.formula_length] = [len(formula[0])]*len(formula)
+            fd[self.formula_length] = formula_length
         if lr is not None:
             fd[self.lr] = lr
 
@@ -142,7 +143,7 @@ class Img2SeqModel(BaseModel):
 
 
 
-    def _run_epoch(self, config, train_set, val_set, epoch, lr_schedule):
+    def _run_epoch(self, config, train_set, val_set, epoch, lr_schedule, nbatches=None):
         """Performs an epoch of training
 
         Args:
@@ -159,13 +160,14 @@ class Img2SeqModel(BaseModel):
         """
         # logging
         batch_size = config.batch_size
-        nbatches = (len(train_set) + batch_size - 1) // batch_size
+        if nbatches is None:
+            nbatches = (len(train_set[1]) + batch_size - 1) // batch_size
         prog = Progbar(nbatches)
-
+        train_batch = TrainBatchData(train_set[0], train_set[1], batch_size, nbatches, self._vocab.id_pad, self._vocab.id_end, (1,1))
         # iterate over dataset
-        for i, (img, formula) in enumerate(minibatches(train_set, batch_size)):
+        for i, (img, formula, formula_length) in enumerate(train_batch):
             # get feed dict
-            fd = self._get_feed_dict(img, training=True, formula=formula,
+            fd = self._get_feed_dict(img, training=True, formula=formula, formula_length=formula_length,
                     lr=lr_schedule.lr, dropout=config.dropout)
 
             # update step
