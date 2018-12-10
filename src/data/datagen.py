@@ -116,7 +116,7 @@ class Vocab(object):
 
 class LoadData(object):
     
-    def __init__(self, data_path, image_folder, formula_lst, one2one, train_portion=0.85, val_portion=0.05,
+    def __init__(self, data_path, image_folder, formula_lst, one2one, train_portion=0.88, val_portion=0.02,
                 min_token_num=0, max_formula_len=100, 
                 topbotpad=(1,1), max_aspect=16):
         self.data_path = data_path
