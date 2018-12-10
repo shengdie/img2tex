@@ -28,7 +28,7 @@ def resize_img(img, tbpad=(1,1), aspect=16):
     else:
         return None
 
-def sort_filt_data(data_set, tbpad, max_aspect, max_formula_len):
+def sort_filt_data(data_set, tbpad, max_aspect, max_formula_len, min_w = 32):
     """ sort by width, and filter by max_aspect and max_formula_len
     """
     imgs, formulas = data_set
@@ -38,7 +38,8 @@ def sort_filt_data(data_set, tbpad, max_aspect, max_formula_len):
     tokenlized_fm = []
     images_f = []
     for i in argso:
-        if len(formulas[i]) <= max_formula_len and imgs[i].shape[1] <= max_img_len:
+        ow = imgs[i].shape[1]
+        if len(formulas[i]) <= max_formula_len and ow] <= max_img_len and ow >=min_w:
             tokenlized_fm.append(formulas[i])
             images_f.append(imgs[i])
     return images_f, tokenlized_fm
