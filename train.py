@@ -10,6 +10,8 @@ train_set, val_set, test_set, vocab = data()
 test_set = DataGen(test_set[0], test_set[1])
 val_set = DataGen(val_set[0], val_set[1])
 
+
+
 config = Config(['./configs/data.json', './configs/vocab.json', './configs/training.json',
                 './configs/model.json'])
 dir_save = './results/large_minnum10_120em/'
