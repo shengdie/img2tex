@@ -39,7 +39,7 @@ def sort_filt_data(data_set, tbpad, max_aspect, max_formula_len, min_w = 32):
     images_f = []
     for i in argso:
         ow = imgs[i].shape[1]
-        if len(formulas[i]) <= max_formula_len and ow] <= max_img_len and ow >=min_w:
+        if len(formulas[i]) <= max_formula_len and ow <= max_img_len and ow >=min_w:
             tokenlized_fm.append(formulas[i])
             images_f.append(imgs[i])
     return images_f, tokenlized_fm
