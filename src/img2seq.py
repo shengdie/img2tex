@@ -166,6 +166,7 @@ class Img2SeqModel(BaseModel):
         train_batch = TrainBatchData(train_set[0], train_set[1], batch_size, nbatches, self._vocab.id_pad, self._vocab.id_end, (1,1))
         # iterate over dataset
         for i, (img, formula, formula_length) in enumerate(train_batch):
+            print(img, formula)
             # get feed dict
             fd = self._get_feed_dict(img, training=True, formula=formula, formula_length=formula_length,
                     lr=lr_schedule.lr, dropout=config.dropout)
