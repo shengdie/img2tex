@@ -133,7 +133,7 @@ class BaseModel(object):
                 self.sess.graph)
 
 
-    def train(self, config, train_set, val_set, lr_schedule, nbatch_per_epoch=None):
+    def train(self, config, train_set, val_set, lr_schedule, nbatch_per_epoch=None, best_score=None):
         """Global training procedure
 
         Calls method self.run_epoch and saves weights if score improves.
@@ -150,7 +150,7 @@ class BaseModel(object):
             best_score: (float)
 
         """
-        best_score = None
+        #best_score = None
 
         for epoch in range(config.n_epochs):
             # logging
