@@ -166,7 +166,6 @@ class Img2SeqModel(BaseModel):
         train_batch = TrainBatchData(train_set[0], train_set[1], batch_size, nbatches, self._vocab.id_pad, self._vocab.id_end, (1,1))
         # iterate over dataset
         for i, (img, formula, formula_length) in enumerate(train_batch):
-            print(img.shape, np.shape(formula))
             # get feed dict
             fd = self._get_feed_dict(img, training=True, formula=formula, formula_length=formula_length,
                     lr=lr_schedule.lr, dropout=config.dropout)
@@ -186,7 +185,7 @@ class Img2SeqModel(BaseModel):
         # evaluation
         config_eval = Config({"dir_answers": self._dir_output + "formulas_val/",
                 "batch_size": config.batch_size})
-        print('Eval......')
+        #print('Eval......')
         scores = self.evaluate(config_eval, val_set)
         score = scores[config.metric_val]
         lr_schedule.update(score=score)
