@@ -10,7 +10,6 @@ from threading import Timer
 from os import listdir
 from os.path import isfile, join
 
-
 def minibatches(data_generator, minibatch_size):
     """
     Args:

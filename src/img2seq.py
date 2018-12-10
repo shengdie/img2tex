@@ -4,11 +4,11 @@ import tensorflow as tf
 import tensorflow.contrib.layers as layers
 
 
-from .utils.general import Config, Progbar, minibatches
+from .utils.general import Config, Progbar#, minibatches
 #from .utils.image import pad_batch_images
 #from .utils.text import pad_batch_formulas
 from .evaluation.text import score_files, write_answers, truncate_end
-from .data.datagen import TrainBatchData
+from .data.datagen import TrainBatchData, minibatches
 #from .data.data_utils import pad_batch_formulas, pad_batch_images
 
 from .encoder import Encoder
@@ -213,8 +213,8 @@ class Img2SeqModel(BaseModel):
 
         # iterate over the dataset
         n_words, ce_words = 0, 0 # sum of ce for all words + nb of words
-        for img, formula in minibatches(test_set, config.batch_size):
-            fd = self._get_feed_dict(img, training=False, formula=formula,
+        for img, formula, formula_length in minibatches(test_set, config.batch_size, self._vocab.id_pad, self._vocab.id_end):
+            fd = self._get_feed_dict(img, training=False, formula=formula, formula_length=formula_length,
                     dropout=1)
             ce_words_eval, n_words_eval, ids_eval = self.sess.run(
                     [self.ce_words, self.n_words, self.pred_test.ids],

@@ -131,7 +131,7 @@ class BaseModel(object):
                 self.sess.graph)
 
 
-    def train(self, config, train_set, val_set, lr_schedule):
+    def train(self, config, train_set, val_set, lr_schedule, nbatch_per_epoch=None):
         """Global training procedure
 
         Calls method self.run_epoch and saves weights if score improves.
@@ -157,7 +157,7 @@ class BaseModel(object):
 
             # epoch
             score = self._run_epoch(config, train_set, val_set, epoch,
-                    lr_schedule)
+                    lr_schedule, nbatches=nbatch_per_epoch)
 
             # save weights if we have new best score on eval
             if best_score is None or score >= best_score:
@@ -177,7 +177,7 @@ class BaseModel(object):
         return best_score
 
 
-    def _run_epoch(config, train_set, val_set, epoch, lr_schedule):
+    def _run_epoch(config, train_set, val_set, epoch, lr_schedule, nbatches=None):
         """Model_specific method to overwrite
 
         Performs an epoch of training

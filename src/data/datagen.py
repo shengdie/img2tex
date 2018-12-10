@@ -3,6 +3,30 @@ import numpy as np
 import cv2
 from .data_utils import *
 
+def minibatches(data_generator, minibatch_size,  id_pad, id_end, tbpad=(1,1),):
+    """
+    Args:
+        data_generator: generator of (img, formulas) tuples
+        minibatch_size: (int)
+
+    Returns:
+        list of tuples
+
+    """
+    x_batch, y_batch = [], []
+    for (x, y) in data_generator:
+        if len(x_batch) == minibatch_size:
+            fm, fm_len = pad_batch_formulas(y_batch, id_pad, id_end)
+            yield pad_batch_images(x_batch, tbpad), fm, fm_len
+            x_batch, y_batch = [], []
+
+        x_batch += [x]
+        y_batch += [y]
+
+    if len(x_batch) != 0:
+        fm, fm_len = pad_batch_formulas(y_batch, id_pad, id_end)
+        yield pad_batch_images(x_batch, tbpad), fm, fm_len
+
 class DataGen(object):
     def __init__(self, imgs, formulas):
         self._imgs = imgs
@@ -141,7 +165,7 @@ class LoadData(object):
         id_to_token, token_to_id = generate_vocab(formulas_tokenlized, cut=self.min_token_num, 
                                                   null=self._null, #start=self._start, 
                                                   end=self._end,unk=self._unk)
-        print(token_to_id)
+        #print(token_to_id)
         formulas= [[token_to_id[fmt] for fmt in fm] for fm in formulas_tokenlized]                                       
         images = [cv2.imread(os.path.join(self.img_path, f), cv2.IMREAD_GRAYSCALE) for f in img_names]
         #_resizeimg = lambda x: resize_img(x, self.topbotpad, self.aspect)
