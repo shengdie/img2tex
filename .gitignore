@@ -7,3 +7,5 @@ images/
 *.txt
 scripts/
 third_party/
+/results/
+__pycache__/
