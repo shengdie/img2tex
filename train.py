@@ -8,12 +8,13 @@ data = LoadData('./data/', 'images/', 'formulas.final.lst', 'formula_image_1to1.
 train_set, val_set, test_set, vocab = data()
 
 test_set = DataGen(test_set[0], test_set[1])
+val_set = DataGen(val_set[0], val_set[1])
 
 config = Config(['./configs/data_small.json', './configs/vocab_small.json', './configs/training_small.json',
                 './configs/model.json'])
 config.save('./results/small/')
 
-n_batches_epoch = ((len(train_set) + config.batch_size - 1) //
+n_batches_epoch = ((len(train_set[1]) + config.batch_size - 1) //
                         config.batch_size)
 
 lr_schedule = LRSchedule(lr_init=config.lr_init,
@@ -26,4 +27,4 @@ lr_schedule = LRSchedule(lr_init=config.lr_init,
 model = Img2SeqModel(config, './results/small/', vocab)
 
 model.build_train(config)
-model.train(config, val_set, test_set, lr_schedule)
+model.train(config, train_set, val_set, lr_schedule)
