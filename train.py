@@ -14,9 +14,8 @@ config = Config(['./configs/data.json', './configs/vocab.json', './configs/train
                 './configs/model.json'])
 config.save('./results/large/')
 
-#n_batches_epoch = ((len(train_set[1]) + config.batch_size - 1) //
-#                        config.batch_size)
-n_batches_epoch = 100
+n_batches_epoch = ((len(train_set[1]) + config.batch_size - 1) // config.batch_size)
+#n_batches_epoch = 100
 lr_schedule = LRSchedule(lr_init=config.lr_init,
         start_decay=config.start_decay*n_batches_epoch,
         end_decay=config.end_decay*n_batches_epoch,
