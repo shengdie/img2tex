@@ -166,7 +166,8 @@ class LoadData(object):
                                                   null=self._null, #start=self._start, 
                                                   end=self._end,unk=self._unk)
         #print(token_to_id)
-        formulas= [[token_to_id[fmt] for fmt in fm] for fm in formulas_tokenlized]                                       
+        #formulas= [[token_to_id[fmt] for fmt in fm] for fm in formulas_tokenlized]
+        formulas = code_token_to_id(token_to_id, formulas_tokenlized, self._unk)                                       
         images = [cv2.imread(os.path.join(self.img_path, f), cv2.IMREAD_GRAYSCALE) for f in img_names]
         #_resizeimg = lambda x: resize_img(x, self.topbotpad, self.aspect)
         #images = list(map(_resizeimg, images))

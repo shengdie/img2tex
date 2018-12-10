@@ -97,3 +97,7 @@ def generate_vocab(tokenlized_fms, cut=0, null='<NULL>', start='<START>', end='<
     id_to_token = np.concatenate(([null,end, unk], id_to_token))
     token_to_id = {id_to_token[i]: i for i in range(len(id_to_token))}
     return id_to_token, token_to_id
+
+def code_token_to_id(token_to_id, formula_tokens, unk):
+    id_unk = token_to_id[unk]
+    return [[token_to_id[fmt] if fmt in token_to_id else id_unk for fmt in fm] for fm in formula_tokens] 
