@@ -5,7 +5,7 @@ from src.utils.lr_schedule import LRSchedule
 from src.utils.general import Config
 from src.evaluation.text import score_files
 
-data = LoadData('./data/', 'images/', 'formulas.final.lst', 'formula_image_1to1.lst', min_token_num=10)
+data = LoadData('./data/', 'images/', 'formulas.final.lst', 'formula_image_1to1.lst')
 train_set, val_set, test_set, vocab = data()
 
 test_set = DataGen(test_set[0], test_set[1])
