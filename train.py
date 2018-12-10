@@ -27,4 +27,4 @@ lr_schedule = LRSchedule(lr_init=config.lr_init,
 model = Img2SeqModel(config, './results/large/', vocab)
 
 model.build_train(config)
-model.train(config, train_set, val_set, lr_schedule)
+model.train(config, train_set, val_set, lr_schedule, nbatch_per_epoch=n_batches_epoch)
