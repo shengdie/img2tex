@@ -37,10 +37,9 @@ def dynamic_decode(decoder_cell, maximum_iterations):
             decoder_cell.output_dtype)
     initial_state, initial_inputs, initial_finished = decoder_cell.initialize()
     # attention alphas
-    alpha_list = []
+    alphas_list = []
 
-    def condition(time, unused_outputs_ta, unused_state, unused_inputs,
-        finished, alpha_list):
+    def condition(time, unused_outputs_ta, unused_state, unused_inputs, finished, alpha_list):
         return tf.logical_not(tf.reduce_all(finished))
 
     def body(time, outputs_ta, state, inputs, finished, alpha_list):
@@ -63,7 +62,7 @@ def dynamic_decode(decoder_cell, maximum_iterations):
             condition,
             body,
             loop_vars=[initial_time, initial_outputs_ta, initial_state,
-                       initial_inputs, initial_finished, alpha_list],
+                       initial_inputs, initial_finished, alphas_list],
             back_prop=False)
 
     # get final outputs and states
