@@ -142,7 +142,7 @@ class BeamSearchDecoderCell(object):
         embedding = merge_batch_beam(embedding)
 
         # compute new logits
-        logits, new_cell_state = self._cell.step(embedding, cell_state)
+        logits, new_cell_state, alpha = self._cell.step(embedding, cell_state)
 
         # split batch and beam dimension before beam search logic
         new_logits = split_batch_beam(logits, self._beam_size)
@@ -193,7 +193,7 @@ class BeamSearchDecoderCell(object):
         new_output = BeamSearchDecoderOutput(logits=new_logits, ids=new_ids,
                 parents=new_parents)
 
-        return (new_output, new_state, new_embedding, new_finished)
+        return (new_output, new_state, new_embedding, new_finished, alpha)
 
 
     def finalize(self, final_outputs, final_state):

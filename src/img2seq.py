@@ -116,11 +116,12 @@ class Img2SeqModel(BaseModel):
     def _add_pred_op(self):
         """Defines self.pred"""
         encoded_img = self.encoder(self.training, self.img, self.dropout)
-        train, test = self.decoder(self.training, encoded_img, self.formula,
+        train, test, alphas = self.decoder(self.training, encoded_img, self.formula,
                 self.dropout)
 
         self.pred_train = train
         self.pred_test  = test
+        self.alphas = alphas
 
 
     def _add_loss_op(self):
@@ -186,7 +187,7 @@ class Img2SeqModel(BaseModel):
         config_eval = Config({"dir_answers": self._dir_output + "formulas_val/",
                 "batch_size": config.batch_size})
         #print('Eval......')
-        scores = self.evaluate(config_eval, val_set)
+        scores, _ = self.evaluate(config_eval, val_set)
         score = scores[config.metric_val]
         lr_schedule.update(score=score)
 
@@ -212,13 +213,16 @@ class Img2SeqModel(BaseModel):
         elif self._config.decoding == "beam_search":
             refs, hyps = [], [[] for i in range(self._config.beam_size)]
 
+        #alphas
+        alphas_all=[]
+
         # iterate over the dataset
         n_words, ce_words = 0, 0 # sum of ce for all words + nb of words
         for img, formula, formula_length in minibatches(test_set, config.batch_size, self._vocab.id_pad, self._vocab.id_end):
             fd = self._get_feed_dict(img, training=False, formula=formula, formula_length=formula_length,
                     dropout=1)
-            ce_words_eval, n_words_eval, ids_eval = self.sess.run(
-                    [self.ce_words, self.n_words, self.pred_test.ids],
+            ce_words_eval, n_words_eval, ids_eval, alphas = self.sess.run(
+                    [self.ce_words, self.n_words, self.pred_test.ids, self.alphas],
                     feed_dict=fd)
 
             # TODO(guillaume): move this logic into tf graph
@@ -234,13 +238,15 @@ class Img2SeqModel(BaseModel):
                 refs.append(form)
                 for i, pred in enumerate(preds):
                     hyps[i].append(pred)
+            
+            alphas_all.append(alphas)
 
         files = write_answers(refs, hyps, self._vocab.id_to_tok,
                 config.dir_answers, self._vocab.id_end)
 
         perp = - np.exp(ce_words / float(n_words))
 
-        return files, perp
+        return files, perp, alphas_all
 
 
     def _run_evaluate(self, config, test_set):
@@ -255,11 +261,11 @@ class Img2SeqModel(BaseModel):
             scores: (dict) scores["acc"] = 0.85 for instance
 
         """
-        files, perp = self.write_prediction(config, test_set)
+        files, perp, alphas = self.write_prediction(config, test_set)
         scores = score_files(files[0], files[1])
         scores["perplexity"] = perp
 
-        return scores
+        return scores, alphas
 
 
     def predict_batch(self, images):

@@ -217,7 +217,7 @@ class BaseModel(object):
         sys.stdout.flush()
 
         # evaluate
-        scores = self._run_evaluate(config, test_set)
+        scores, alphas = self._run_evaluate(config, test_set)
 
         # logging
         sys.stdout.write("\r")
@@ -226,7 +226,7 @@ class BaseModel(object):
                 for k, v in scores.items()])
         self.logger.info("- Eval: {}".format(msg))
 
-        return scores
+        return scores, alphas
 
 
     def _run_evaluate(config, test_set):

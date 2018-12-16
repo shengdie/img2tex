@@ -76,7 +76,7 @@ class AttentionCell(RNNCell):
             new_h = tf.nn.dropout(new_h, self._dropout)
 
             # compute attention
-            c = self._attention_mechanism.context(new_h)
+            c, a = self._attention_mechanism.context(new_h)
 
             # compute o
             o_W_c = tf.get_variable("o_W_c", dtype=tf.float32,
@@ -94,7 +94,7 @@ class AttentionCell(RNNCell):
             # new Attn cell state
             new_state = AttentionState(new_cell_state, new_o)
 
-            return logits, new_state
+            return logits, new_state, a
 
 
     def __call__(self, inputs, state):
@@ -106,6 +106,6 @@ class AttentionCell(RNNCell):
                 the previous word
 
         """
-        new_output, new_state = self.step(inputs, state)
+        new_output, new_state, a = self.step(inputs, state)
 
         return (new_output, new_state)

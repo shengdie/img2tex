@@ -36,13 +36,15 @@ def dynamic_decode(decoder_cell, maximum_iterations):
     initial_outputs_ta = nest.map_structure(create_ta,
             decoder_cell.output_dtype)
     initial_state, initial_inputs, initial_finished = decoder_cell.initialize()
+    # attention alphas
+    alpha_list = []
 
     def condition(time, unused_outputs_ta, unused_state, unused_inputs,
         finished):
         return tf.logical_not(tf.reduce_all(finished))
 
-    def body(time, outputs_ta, state, inputs, finished):
-        new_output, new_state, new_inputs, new_finished = decoder_cell.step(
+    def body(time, outputs_ta, state, inputs, finished, alpha_list):
+        new_output, new_state, new_inputs, new_finished, alpha = decoder_cell.step(
             time, state, inputs, finished)
 
         outputs_ta = nest.map_structure(lambda ta, out: ta.write(time, out),
@@ -51,19 +53,22 @@ def dynamic_decode(decoder_cell, maximum_iterations):
         new_finished = tf.logical_or(
             tf.greater_equal(time, maximum_iterations),
             new_finished)
+        # attention alphas
+        alpha_list.append(alpha)
 
-        return (time + 1, outputs_ta, new_state, new_inputs, new_finished)
+        return (time + 1, outputs_ta, new_state, new_inputs, new_finished, alpha_list)
 
     with tf.variable_scope("rnn"):
         res = tf.while_loop(
             condition,
             body,
             loop_vars=[initial_time, initial_outputs_ta, initial_state,
-                       initial_inputs, initial_finished],
+                       initial_inputs, initial_finished, alpha_list],
             back_prop=False)
 
     # get final outputs and states
     final_outputs_ta, final_state = res[1], res[2]
+    alpha_stack = tf.transpose(tf.stack(res[-1]), (1,0,2))
 
     # unfold and stack the structure from the nested tas
     final_outputs = nest.map_structure(lambda ta: ta.stack(), final_outputs_ta)
@@ -74,4 +79,4 @@ def dynamic_decode(decoder_cell, maximum_iterations):
     # transpose the final output
     final_outputs = nest.map_structure(transpose_batch_time, final_outputs)
 
-    return final_outputs, final_state
+    return final_outputs, final_state, alpha_stack

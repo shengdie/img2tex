@@ -9,3 +9,5 @@ scripts/
 third_party/
 /results/
 __pycache__/
+*.gz
+*.xz

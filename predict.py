@@ -25,8 +25,9 @@ model.restore_session(dir_output + "model.weights/")
 config_eval = Config({"dir_answers": dir_output + "formulas_test/",
                           "batch_size": 20})
 
-files, perplexity = model.write_prediction(config_eval, test_set)
+files, perplexity, alphas = model.write_prediction(config_eval, test_set)
 formula_ref, formula_hyp = files[0], files[1]
+print(alphas[0][0])
 
 # score the ref and prediction files
 scores = score_files(formula_ref, formula_hyp)

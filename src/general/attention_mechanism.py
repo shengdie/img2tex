@@ -86,10 +86,11 @@ class AttentionMechanism(object):
 
             # compute weights
             a = tf.nn.softmax(e)
+            al = a
             a = tf.expand_dims(a, axis=-1)
             c = tf.reduce_sum(a * img, axis=1)
 
-            return c
+            return c, al
 
 
     def initial_cell_state(self, cell):

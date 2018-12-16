@@ -76,10 +76,10 @@ class Decoder(object):
                         start_token, self._id_end, self._config.beam_size,
                         self._config.div_gamma, self._config.div_prob)
 
-            test_outputs, _ = dynamic_decode(decoder_cell,
+            test_outputs, _, alphas = dynamic_decode(decoder_cell,
                     self._config.max_length_formula+1)
 
-        return train_outputs, test_outputs
+        return train_outputs, test_outputs, alphas
 
 
 def get_embeddings(formula, E, dim, start_token, batch_size):
