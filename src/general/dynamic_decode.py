@@ -37,7 +37,7 @@ def dynamic_decode(decoder_cell, maximum_iterations):
             decoder_cell.output_dtype)
     initial_state, initial_inputs, initial_finished = decoder_cell.initialize()
     # attention alphas
-    alphas_list = []
+    alphas_list = tf.Variable([])
 
     def condition(time, unused_outputs_ta, unused_state, unused_inputs, finished, alpha_list):
         return tf.logical_not(tf.reduce_all(finished))
@@ -53,8 +53,8 @@ def dynamic_decode(decoder_cell, maximum_iterations):
             tf.greater_equal(time, maximum_iterations),
             new_finished)
         # attention alphas
-        alpha_list.append(alpha)
-
+        #alpha_list.append(alpha)
+        alpha_list = tf.concat([alpha_list, [alpha]], 0)
         return (time + 1, outputs_ta, new_state, new_inputs, new_finished, alpha_list)
 
     with tf.variable_scope("rnn"):
@@ -67,7 +67,8 @@ def dynamic_decode(decoder_cell, maximum_iterations):
 
     # get final outputs and states
     final_outputs_ta, final_state = res[1], res[2]
-    alpha_stack = tf.transpose(tf.stack(res[-1]), (1,0,2))
+    #alpha_stack = tf.transpose(tf.stack(res[-1]), (1,0,2))
+    alpha_stack = tf.transpose(res[-1], (1,0,2))
 
     # unfold and stack the structure from the nested tas
     final_outputs = nest.map_structure(lambda ta: ta.stack(), final_outputs_ta)
