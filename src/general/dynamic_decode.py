@@ -40,7 +40,7 @@ def dynamic_decode(decoder_cell, maximum_iterations):
     alpha_list = []
 
     def condition(time, unused_outputs_ta, unused_state, unused_inputs,
-        finished):
+        finished, alpha_list):
         return tf.logical_not(tf.reduce_all(finished))
 
     def body(time, outputs_ta, state, inputs, finished, alpha_list):
