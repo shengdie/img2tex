@@ -14,7 +14,7 @@ val_set = DataGen(val_set[0], val_set[1])
 
 config = Config(['./configs/data.json', './configs/vocab.json', './configs/training.json',
                 './configs/model.json'])
-dir_save = './results/large_gr0_nope/'
+dir_save = './results/large_gr0_newencoder/'
 config.save(dir_save)
 
 n_batches_epoch = ((len(train_set[1]) + config.batch_size - 1) // config.batch_size)
