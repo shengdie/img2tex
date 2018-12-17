@@ -2,17 +2,17 @@
     "export_name": "model.json",
 
     "encoder_cnn": "vanilla",
-    "positional_embeddings": true,
+    "positional_embeddings": false,
 
     "attn_cell_config": {
         "cell_type": "lstm",
         "num_units": 512,
         "dim_e"    : 512,
         "dim_o"    : 512,
-        "dim_embeddings": 120
+        "dim_embeddings": 80
     },
 
-    "decoding": "beam_search",
+    "decoding": "greedy",
     "beam_size": 5,
     "div_gamma": 1,
     "div_prob": 0,

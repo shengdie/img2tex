@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import tensorflow as tf
+from tensorflow.python import debug as tf_debug
 
 
 from .utils.general import init_dir, get_logger
@@ -81,6 +82,7 @@ class BaseModel(object):
         config = tf.ConfigProto(log_device_placement=True)
         config.gpu_options.allow_growth = True
         self.sess = tf.Session()
+        #self.sess = tf_debug.TensorBoardDebugWrapperSession(self.sess, 'localhost:6064')
         self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver()
 

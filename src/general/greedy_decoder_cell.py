@@ -52,7 +52,7 @@ class GreedyDecoderCell(object):
 
     def step(self, time, state, embedding, finished):
         # next step of attention cell
-        logits, new_state = self._attention_cell.step(embedding, state)
+        logits, new_state, alpha = self._attention_cell.step(embedding, state)
 
         # get ids of words predicted and get embedding
         new_ids = tf.cast(tf.argmax(logits, axis=-1), tf.int32)
@@ -64,7 +64,7 @@ class GreedyDecoderCell(object):
         new_finished = tf.logical_or(finished, tf.equal(new_ids,
                 self._end_token))
 
-        return (new_output, new_state, new_embedding, new_finished)
+        return (new_output, new_state, new_embedding, new_finished, alpha)
 
 
     def finalize(self, final_outputs, final_state):

@@ -86,7 +86,11 @@ class AttentionMechanism(object):
 
             # compute weights
             a = tf.nn.softmax(e)
-            al = a
+            al = tf.identity(a)
+            #print_a = tf.print("alpha",a, "shape", a.shape)
+            #with tf.control_dependencies([print_a]):
+            #    al = a
+            #tf.print(a)
             a = tf.expand_dims(a, axis=-1)
             c = tf.reduce_sum(a * img, axis=1)
 

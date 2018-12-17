@@ -26,7 +26,8 @@ class Img2SeqModel(BaseModel):
             vocab: Vocab instance defining useful vocab objects like tok_to_id
 
         """
-        super(Img2SeqModel, self).__init__(config, dir_output)
+        #super(Img2SeqModel, self).__init__(config, dir_output)
+        super().__init__(config, dir_output)
         self._vocab = vocab
 
 
@@ -224,7 +225,7 @@ class Img2SeqModel(BaseModel):
             ce_words_eval, n_words_eval, ids_eval, alphas = self.sess.run(
                     [self.ce_words, self.n_words, self.pred_test.ids, self.alphas],
                     feed_dict=fd)
-
+            #print(ids_eval.shape)
             # TODO(guillaume): move this logic into tf graph
             if self._config.decoding == "greedy":
                 ids_eval = np.expand_dims(ids_eval, axis=1)
@@ -238,7 +239,7 @@ class Img2SeqModel(BaseModel):
                 refs.append(form)
                 for i, pred in enumerate(preds):
                     hyps[i].append(pred)
-            
+            #print(alphas)
             alphas_all.append(alphas)
 
         files = write_answers(refs, hyps, self._vocab.id_to_tok,
