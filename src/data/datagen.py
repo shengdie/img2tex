@@ -23,9 +23,9 @@ def minibatches(data_generator, minibatch_size,  id_pad, id_end, tbpad=(1,1),):
         x_batch += [x]
         y_batch += [y]
 
-    if len(x_batch) != 0:
-        fm, fm_len = pad_batch_formulas(y_batch, id_pad, id_end)
-        yield pad_batch_images(x_batch, tbpad), fm, fm_len
+    #if len(x_batch) != 0:
+    #    fm, fm_len = pad_batch_formulas(y_batch, id_pad, id_end)
+    #    yield pad_batch_images(x_batch, tbpad), fm, fm_len
 
 class DataGen(object):
     def __init__(self, imgs, formulas):

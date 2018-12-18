@@ -11,7 +11,7 @@ from .evaluation.text import score_files, write_answers, truncate_end
 from .data.datagen import TrainBatchData, minibatches
 #from .data.data_utils import pad_batch_formulas, pad_batch_images
 
-from .encoder import Encoder
+from .encoder_rnn import Encoder
 from .decoder import Decoder
 from .base import BaseModel
 

@@ -11,3 +11,4 @@ third_party/
 __pycache__/
 *.gz
 *.xz
+/all_results/
